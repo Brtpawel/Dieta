@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dieta Pylera">
+<meta name="theme-color" content="#1A3220">
+<title>Dieta Pylera</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Georgia,serif;background:#FDF8F0;max-width:480px;margin:0 auto;padding-bottom:32px}
+/* Header */
+.hdr{background:linear-gradient(150deg,#1A3220,#3A6A3C);padding:max(48px,calc(env(safe-area-inset-top)+14px)) 18px 18px;color:#FDF8F0}
+.hl{font-family:system-ui;font-size:10px;letter-spacing:3px;opacity:.6;text-transform:uppercase;margin-bottom:4px}
+.ht{font-size:19px;font-weight:bold;line-height:1.25;margin-bottom:5px}
+.htags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.htag{background:rgba(255,255,255,.13);border-radius:20px;padding:3px 9px;font-size:11px;font-family:system-ui}
+.gnote{background:#FFF8ED;border-bottom:1px solid #E8D8B8;padding:9px 14px;font-family:system-ui;font-size:12px;color:#5A3A10;line-height:1.55}
+.leg{background:#F3EDE2;padding:9px 14px;display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid #E4DAC8}
+.bdg{color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-family:system-ui;white-space:nowrap}
+/* Tabs */
+.tabs{display:flex;background:#FAF5EC;border-bottom:2px solid #E0D8C8;position:sticky;top:0;z-index:20}
+.tb{flex:1;padding:11px 2px;border:none;background:transparent;font-family:system-ui;font-size:11px;cursor:pointer;border-bottom:2px solid transparent;color:#7A6E5E;margin-bottom:-2px}
+.tb.on{font-weight:700;color:#1A3220;border-bottom:2px solid #3A6A3C}
+.tp{display:none;padding:12px}
+.tp.on{display:block}
+/* Meals */
+.mc{margin-bottom:9px;background:#fff;border-radius:13px;box-shadow:0 1px 6px rgba(0,0,0,.07);border:1px solid #EDE5D8;overflow:hidden}
+.ms{padding:12px 13px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;user-select:none;list-style:none}
+.ms::-webkit-details-marker{display:none}
+.mico{font-size:19px;min-width:26px;margin-top:2px;flex-shrink:0}
+.minfo{flex:1;display:flex;flex-direction:column;gap:5px}
+.mttl{font-family:system-ui;font-weight:700;font-size:13px;color:#1A2A1B}
+.mbdg{display:flex;gap:5px;flex-wrap:wrap}
+.marr{font-size:15px;color:#AAA;flex-shrink:0;margin-top:2px;transition:transform .2s}
+details[open] .marr{transform:rotate(180deg)}
+.mbdy{padding:0 12px 12px;border-top:1px solid #F0E8DA}
+.warn{padding:8px 10px;border-radius:7px;font-size:12px;font-family:system-ui;line-height:1.5;margin:10px 0 9px}
+/* Variant cards */
+.vgrid{display:flex;flex-direction:column;gap:7px}
+.vc{background:#FAF6EF;border:2px solid #EDE5D8;border-radius:10px;overflow:hidden;transition:border-color .15s}
+.vc.on{border-color:#3A6A3C;background:#EDF5ED}
+.vc-top{display:flex;align-items:center;gap:10px;padding:10px 11px;cursor:pointer;user-select:none}
+.ve{font-size:22px;flex-shrink:0}
+.vc-info{flex:1;min-width:0}
+.vn{font-family:system-ui;font-weight:700;font-size:13px;color:#1A2A1B;display:block;line-height:1.3}
+.vi-list{font-family:system-ui;font-size:11px;color:#7A6E5E;display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vchk{font-size:18px;color:#AAA;flex-shrink:0;transition:all .15s}
+.vc.on .vchk{color:#2D6A4F}
+.recipe-btn{width:100%;padding:8px;background:#F0EDE6;border:none;border-top:1px solid #E8E0D0;font-family:system-ui;font-size:12px;color:#3A5A3A;cursor:pointer;text-align:left;font-weight:600}
+.recipe-btn:active{background:#E0D8C8}
+/* Recipe Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
+.modal-hdr{background:linear-gradient(135deg,#1A3220,#3A6A3C);padding:16px 18px;color:#FDF8F0;border-radius:18px 18px 0 0;position:sticky;top:0;z-index:1}
+.modal-close{float:right;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:16px;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:system-ui}
+.modal-meal{font-family:system-ui;font-size:11px;opacity:.7;margin-bottom:3px}
+.modal-title{font-family:system-ui;font-weight:700;font-size:16px;line-height:1.25}
+.modal-time{font-family:system-ui;font-size:11px;opacity:.8;margin-top:4px}
+.modal-body{padding:16px}
+.modal-section{margin-bottom:14px}
+.modal-section-title{font-family:system-ui;font-weight:700;font-size:12px;color:#3A6A3C;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.ingr-item{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;background:#FAF6EF;border-radius:7px;margin-bottom:4px;font-family:system-ui;font-size:13px;color:#2A3A2B}
+.ingr-dot{color:#4A7A4C;font-weight:bold;flex-shrink:0;margin-top:1px}
+.step-item{display:flex;gap:10px;padding:8px 10px;background:#EDF5ED;border-radius:7px;margin-bottom:5px;font-family:system-ui;font-size:13px;color:#2A3A2B;line-height:1.5}
+.step-num{background:#2D6A4F;color:#fff;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+/* Shopping */
+
+.shop-top{margin-bottom:10px;}
+.shop-info{background:#EDF5ED;border:1px solid #B0D4B0;border-radius:9px;padding:11px 14px;font-family:system-ui;font-size:13px;color:#1A3220;line-height:1.6;}
+.shop-prog-wrap{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #EDE5D8;}
+.shop-prog-label{font-family:system-ui;font-size:13px;font-weight:700;color:#1A2A1B;display:flex;justify-content:space-between;margin-bottom:8px;}
+
+.shop-header-old{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:10px;border:1px solid #EDE5D8}
+.shop-progress-label{font-family:system-ui;font-size:13px;font-weight:700;color:#1A2A1B;display:flex;justify-content:space-between;margin-bottom:8px}
+.shop-bar-bg{background:#E0D8C8;border-radius:10px;height:8px;overflow:hidden}
+.shop-bar{background:linear-gradient(90deg,#2D6A4F,#4A9A6A);height:100%;width:0%;border-radius:10px;transition:width .3s}
+#shop-note{background:#FFF8ED;border:1px solid #E8D8B8;border-radius:8px;padding:9px 12px;font-family:system-ui;font-size:12px;color:#5A3A10;line-height:1.55;margin-bottom:10px}
+.shop-cat{background:#fff;border-radius:10px;border:1px solid #EDE5D8;margin-bottom:10px;overflow:hidden}
+.shop-cat-title{padding:10px 13px;font-family:system-ui;font-weight:700;font-size:13px;color:#1A2A1B;background:#F3EDE2;border-bottom:1px solid #EDE5D8}
+.shop-item{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;border-bottom:1px solid #F5EFE6;user-select:none}
+.shop-item:last-child{border-bottom:none}
+.shop-item input[type=checkbox]{display:none}
+.shop-check{font-size:18px;color:#CCC;flex-shrink:0;transition:all .15s;min-width:22px;text-align:center}
+.shop-item.checked .shop-check{color:#2D6A4F}
+.shop-text{font-family:system-ui;font-size:13px;color:#2A3A2B;line-height:1.4;transition:all .15s}
+.shop-item.checked .shop-text{text-decoration:line-through;color:#AAA}
+.reset-btn{width:100%;padding:13px;background:#F0E8DA;border:none;border-radius:10px;font-family:system-ui;font-size:13px;color:#6A5A4A;cursor:pointer;font-weight:600;margin-top:4px}
+/* Foods */
+.sh{font-size:15px;font-weight:bold;margin-bottom:10px}
+.fc{margin-bottom:9px;background:#fff;border-radius:10px;padding:11px 12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.fct{font-family:system-ui;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.ft{display:flex;flex-wrap:wrap;gap:5px}
+.fg{background:#EEF6EE;color:#2D4A2F;padding:3px 9px;border-radius:20px;font-size:12px;font-family:system-ui}
+.fb{background:#FEF0EA;color:#7A3A1A;padding:3px 9px;border-radius:20px;font-size:12px;font-family:system-ui}
+/* Rules */
+.rc{margin-bottom:8px;background:#fff;border-radius:11px;padding:12px 13px;border:1px solid #EDE5D8;box-shadow:0 1px 4px rgba(0,0,0,.04);display:flex;gap:11px;align-items:flex-start}
+.ri{font-size:21px;min-width:30px;text-align:center;margin-top:1px;flex-shrink:0}
+.rt{font-family:system-ui;font-weight:700;font-size:13px;color:#1E2A1F;margin-bottom:3px}
+.rd{font-family:system-ui;font-size:12px;color:#6A6058;line-height:1.5}
+.ftr{margin-top:8px;background:#1A3220;border-radius:12px;padding:14px;color:#FDF8F0}
+.fl{font-family:system-ui;font-weight:700;font-size:11px;opacity:.65;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}
+.fd{font-family:system-ui;font-size:12.5px;line-height:1.65;opacity:.9}
+
+.meal-count{display:none;background:#2D6A4F;color:#fff;font-family:system-ui;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+<div class="hl">DIETA LECZNICZA · 10 DNI</div>
+<div class="ht">Plan posiłków · 6 wariantów + przepisy</div>
+<div class="htags">
+<span class="htag">Pylera 4×/dzień</span><span class="htag">H. pylori +</span>
+<span class="htag">Gastropatia</span><span class="htag">Elvanse 30mg</span>
+</div></div>
+
+<div class="gnote"><strong>🔥 Uwzględnione zapalenie żołądka:</strong> brak surowych owoców, imbirowej, cytrusowych, mięty. Owoce gotowane lub dojrzałe. Porcje małe, potrawy letnie.</div>
+
+<div class="leg">
+<span class="bdg" style="background:#2D4A2F">💊 Pylera</span>
+<span class="bdg" style="background:#3A6A5A">🔵 PPI</span>
+<span class="bdg" style="background:#B5622A">🧠 Elvanse</span>
+<span class="bdg" style="background:#4A6A8A">🦠 Probiotyk</span>
+</div>
+
+<div class="tabs">
+<button class="tb on"  onclick="showTab('plan',this)">📅 Plan</button>
+<button class="tb"     onclick="showTab('foods',this)">🥗 Co jeść</button>
+<button class="tb"     onclick="showTab('shop',this)">🛒 Zakupy</button>
+<button class="tb"     onclick="showTab('rules',this)">📋 Zasady</button>
+</div>
+
+<div id="tab-plan"  class="tp on">
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🌅</span>
+  <span class="minfo">
+    <span class="mttl">8:00 — Śniadanie<span class="meal-count" id="cnt0">0 ✓</span></span>
+    <span class="mbdg"><span class="bdg" style="background:#2D4A2F">💊 Pylera</span><span class="bdg" style="background:#3A6A5A">🔵 PPI</span><span class="bdg" style="background:#B5622A">🧠 Elvanse</span></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#FFF0EE;border-left:3px solid #C44A2A;color:#7A2A10">Kolejność: zjedz posiłek → Pylera → Elvanse. BEZ nabiału.</div>
+  <div class="vgrid">
+<div class="vc" id="vc0_0">
+  <div class="vc-top" onclick="selV(0,0)">
+    <span class="ve">🌾</span>
+    <div class="vc-info">
+      <span class="vn">Kasza jaglana z gruszką</span>
+      <span class="vi-list">Kasza jaglana gotowana na wodzie · Gotowana gruszka pokrojona</span>
+    </div>
+    <span class="vchk" id="vchk0_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_0')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc0_1">
+  <div class="vc-top" onclick="selV(0,1)">
+    <span class="ve">🍳</span>
+    <div class="vc-info">
+      <span class="vn">Tost z jajkiem</span>
+      <span class="vi-list">2 tosty białe · Jajko sadzone na oliwie</span>
+    </div>
+    <span class="vchk" id="vchk0_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_1')">📖 Przepis (10 min)</button>
+</div>
+<div class="vc" id="vc0_2">
+  <div class="vc-top" onclick="selV(0,2)">
+    <span class="ve">🍚</span>
+    <div class="vc-info">
+      <span class="vn">Ryż rozgotowany z miodem</span>
+      <span class="vi-list">Ryż biały rozgotowany na wodzie · Miód + rodzynki</span>
+    </div>
+    <span class="vchk" id="vchk0_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_2')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc0_3">
+  <div class="vc-top" onclick="selV(0,3)">
+    <span class="ve">🥚</span>
+    <div class="vc-info">
+      <span class="vn">Jajecznica na tostach</span>
+      <span class="vi-list">2 jajka + oliwa (bez mleka!) · 2 tosty białe</span>
+    </div>
+    <span class="vchk" id="vchk0_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_3')">📖 Przepis (8 min)</button>
+</div>
+<div class="vc" id="vc0_4">
+  <div class="vc-top" onclick="selV(0,4)">
+    <span class="ve">🥑</span>
+    <div class="vc-info">
+      <span class="vn">Tost z awokado i jajkiem</span>
+      <span class="vi-list">1–2 tosty białe · Pół awokado roztartego</span>
+    </div>
+    <span class="vchk" id="vchk0_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_4')">📖 Przepis (12 min)</button>
+</div>
+<div class="vc" id="vc0_5">
+  <div class="vc-top" onclick="selV(0,5)">
+    <span class="ve">🍞</span>
+    <div class="vc-info">
+      <span class="vn">Pasta jajeczna na chlebie</span>
+      <span class="vi-list">2 jajka ugotowane na twardo · Łyżka masła lub oliwy</span>
+    </div>
+    <span class="vchk" id="vchk0_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_5')">📖 Przepis (15 min)</button>
+</div>
+<div class="vc" id="vc0_6">
+  <div class="vc-top" onclick="selV(0,6)">
+    <span class="ve">🫕</span>
+    <div class="vc-info">
+      <span class="vn">Polenta z miodem i bananem</span>
+      <span class="vi-list">Polenta gotowana na wodzie · Miód</span>
+    </div>
+    <span class="vchk" id="vchk0_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_6')">📖 Przepis (8 min)</button>
+</div>
+<div class="vc" id="vc0_7">
+  <div class="vc-top" onclick="selV(0,7)">
+    <span class="ve">🍌</span>
+    <div class="vc-info">
+      <span class="vn">Tost z bananem i masłem migdałowym</span>
+      <span class="vi-list">2 tosty białe · Masło migdałowe 2 łyżki</span>
+    </div>
+    <span class="vchk" id="vchk0_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('0_7')">📖 Przepis (5 min)</button>
+</div></div>
+</div>
+</details>
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🥛</span>
+  <span class="minfo">
+    <span class="mttl">11:30 — Drugie śniadanie<span class="meal-count" id="cnt1">0 ✓</span></span>
+    <span class="mbdg"><span class="bdg" style="background:#4A6A8A">🦠 Probiotyk</span></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#EDF5ED;border-left:3px solid #4A7A4C;color:#1E3A20">Bezpieczne okno na nabiał — 3h po pierwszej dawce Pylery.</div>
+  <div class="vgrid">
+<div class="vc" id="vc1_0">
+  <div class="vc-top" onclick="selV(1,0)">
+    <span class="ve">🥛</span>
+    <div class="vc-info">
+      <span class="vn">Kefir z bananem</span>
+      <span class="vi-list">Kefir naturalny 200 ml · Dojrzały banan</span>
+    </div>
+    <span class="vchk" id="vchk1_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_0')">📖 Przepis (3 min)</button>
+</div>
+<div class="vc" id="vc1_1">
+  <div class="vc-top" onclick="selV(1,1)">
+    <span class="ve">🍶</span>
+    <div class="vc-info">
+      <span class="vn">Jogurt z owocami</span>
+      <span class="vi-list">Jogurt naturalny 150 g · Banan lub gotowana gruszka</span>
+    </div>
+    <span class="vchk" id="vchk1_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_1')">📖 Przepis (8 min)</button>
+</div>
+<div class="vc" id="vc1_2">
+  <div class="vc-top" onclick="selV(1,2)">
+    <span class="ve">🧀</span>
+    <div class="vc-info">
+      <span class="vn">Serek wiejski z gruszką</span>
+      <span class="vi-list">Serek wiejski chudy 150 g · Gotowana gruszka bez skórki</span>
+    </div>
+    <span class="vchk" id="vchk1_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_2')">📖 Przepis (10 min)</button>
+</div>
+<div class="vc" id="vc1_3">
+  <div class="vc-top" onclick="selV(1,3)">
+    <span class="ve">🥤</span>
+    <div class="vc-info">
+      <span class="vn">Koktajl probiotyczny</span>
+      <span class="vi-list">Kefir 150 ml + banan · Łyżeczka siemienia lnianego</span>
+    </div>
+    <span class="vchk" id="vchk1_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_3')">📖 Przepis (3 min)</button>
+</div>
+<div class="vc" id="vc1_4">
+  <div class="vc-top" onclick="selV(1,4)">
+    <span class="ve">🌱</span>
+    <div class="vc-info">
+      <span class="vn">Jogurt z siemieniem</span>
+      <span class="vi-list">Jogurt naturalny 150 g · Siemię lniane mielone 1 łyżka</span>
+    </div>
+    <span class="vchk" id="vchk1_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_4')">📖 Przepis (3 min)</button>
+</div>
+<div class="vc" id="vc1_5">
+  <div class="vc-top" onclick="selV(1,5)">
+    <span class="ve">🍐</span>
+    <div class="vc-info">
+      <span class="vn">Kefir z gotowaną gruszką</span>
+      <span class="vi-list">Kefir naturalny 200 ml · Gotowana gruszka pokrojona</span>
+    </div>
+    <span class="vchk" id="vchk1_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_5')">📖 Przepis (12 min)</button>
+</div>
+<div class="vc" id="vc1_6">
+  <div class="vc-top" onclick="selV(1,6)">
+    <span class="ve">🥤</span>
+    <div class="vc-info">
+      <span class="vn">Lassi bananowe</span>
+      <span class="vi-list">Kefir 200 ml · Banan</span>
+    </div>
+    <span class="vchk" id="vchk1_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_6')">📖 Przepis (3 min)</button>
+</div>
+<div class="vc" id="vc1_7">
+  <div class="vc-top" onclick="selV(1,7)">
+    <span class="ve">🫙</span>
+    <div class="vc-info">
+      <span class="vn">Twarożek z rodzynkami</span>
+      <span class="vi-list">Twarożek chudy 150 g · Rodzynki 2 łyżki</span>
+    </div>
+    <span class="vchk" id="vchk1_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('1_7')">📖 Przepis (2 min)</button>
+</div></div>
+</div>
+</details>
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🍽️</span>
+  <span class="minfo">
+    <span class="mttl">14:00 — Obiad<span class="meal-count" id="cnt2">0 ✓</span></span>
+    <span class="mbdg"><span class="bdg" style="background:#2D4A2F">💊 Pylera</span></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#FFF0EE;border-left:3px solid #C44A2A;color:#7A2A10">Pełny, ciepły posiłek. BEZ nabiału przy tej dawce.</div>
+  <div class="vgrid">
+<div class="vc" id="vc2_0">
+  <div class="vc-top" onclick="selV(2,0)">
+    <span class="ve">🍲</span>
+    <div class="vc-info">
+      <span class="vn">Rosół + ryż</span>
+      <span class="vi-list">Rosół drobiowy · Ryż biały gotowany</span>
+    </div>
+    <span class="vchk" id="vchk2_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_0')">📖 Przepis (70 min)</button>
+</div>
+<div class="vc" id="vc2_1">
+  <div class="vc-top" onclick="selV(2,1)">
+    <span class="ve">🍗</span>
+    <div class="vc-info">
+      <span class="vn">Kurczak + kasza jaglana</span>
+      <span class="vi-list">Gotowany filet z kurczaka · Kasza jaglana</span>
+    </div>
+    <span class="vchk" id="vchk2_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_1')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc2_2">
+  <div class="vc-top" onclick="selV(2,2)">
+    <span class="ve">🐟</span>
+    <div class="vc-info">
+      <span class="vn">Dorsz + ziemniaki</span>
+      <span class="vi-list">Gotowany filet dorsza · Ziemniaki z koperkiem</span>
+    </div>
+    <span class="vchk" id="vchk2_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_2')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc2_3">
+  <div class="vc-top" onclick="selV(2,3)">
+    <span class="ve">🥕</span>
+    <div class="vc-info">
+      <span class="vn">Krem z marchewki</span>
+      <span class="vi-list">Marchewka + ziemniak · Zblendowane z oliwą</span>
+    </div>
+    <span class="vchk" id="vchk2_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_3')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc2_4">
+  <div class="vc-top" onclick="selV(2,4)">
+    <span class="ve">🐠</span>
+    <div class="vc-info">
+      <span class="vn">Mintaj na parze + ryż</span>
+      <span class="vi-list">Mintaj gotowany na parze · Ryż biały</span>
+    </div>
+    <span class="vchk" id="vchk2_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_4')">📖 Przepis (22 min)</button>
+</div>
+<div class="vc" id="vc2_5">
+  <div class="vc-top" onclick="selV(2,5)">
+    <span class="ve">🥔</span>
+    <div class="vc-info">
+      <span class="vn">Zupa ziemniaczana</span>
+      <span class="vi-list">Ziemniaki + marchewka · Bulion warzywny</span>
+    </div>
+    <span class="vchk" id="vchk2_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_5')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc2_6">
+  <div class="vc-top" onclick="selV(2,6)">
+    <span class="ve">🐟</span>
+    <div class="vc-info">
+      <span class="vn">Łosoś + kasza jaglana</span>
+      <span class="vi-list">Łosoś gotowany na parze · Kasza jaglana</span>
+    </div>
+    <span class="vchk" id="vchk2_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_6')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc2_7">
+  <div class="vc-top" onclick="selV(2,7)">
+    <span class="ve">🥒</span>
+    <div class="vc-info">
+      <span class="vn">Krem z cukinii</span>
+      <span class="vi-list">Cukinia + ziemniak · Bulion bez zasmażki</span>
+    </div>
+    <span class="vchk" id="vchk2_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('2_7')">📖 Przepis (20 min)</button>
+</div></div>
+</div>
+</details>
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🍐</span>
+  <span class="minfo">
+    <span class="mttl">17:00 — Podwieczorek<span class="meal-count" id="cnt3">0 ✓</span></span>
+    <span class="mbdg"></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#FFFBEA;border-left:3px solid #C4A42A;color:#6A4A10">Unikaj nabiału do ok. 18:00 — 2h przed kolejną dawką Pylery.</div>
+  <div class="vgrid">
+<div class="vc" id="vc3_0">
+  <div class="vc-top" onclick="selV(3,0)">
+    <span class="ve">🍐</span>
+    <div class="vc-info">
+      <span class="vn">Gotowana gruszka z miodem</span>
+      <span class="vi-list">Gruszka obrana i ugotowana · Miód naturalny</span>
+    </div>
+    <span class="vchk" id="vchk3_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_0')">📖 Przepis (12 min)</button>
+</div>
+<div class="vc" id="vc3_1">
+  <div class="vc-top" onclick="selV(3,1)">
+    <span class="ve">🍚</span>
+    <div class="vc-info">
+      <span class="vn">Kleik ryżowy</span>
+      <span class="vi-list">Ryż biały rozgotowany (papka) · Miód do smaku</span>
+    </div>
+    <span class="vchk" id="vchk3_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_1')">📖 Przepis (35 min)</button>
+</div>
+<div class="vc" id="vc3_2">
+  <div class="vc-top" onclick="selV(3,2)">
+    <span class="ve">🍪</span>
+    <div class="vc-info">
+      <span class="vn">Wafle ryżowe z miodem</span>
+      <span class="vi-list">Wafle ryżowe 3–4 szt. · Masło migdałowe lub miód</span>
+    </div>
+    <span class="vchk" id="vchk3_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_2')">📖 Przepis (2 min)</button>
+</div>
+<div class="vc" id="vc3_3">
+  <div class="vc-top" onclick="selV(3,3)">
+    <span class="ve">🍌</span>
+    <div class="vc-info">
+      <span class="vn">Banan z miodem Manuka</span>
+      <span class="vi-list">Dojrzały banan rozgnieciony · Łyżka miodu Manuka</span>
+    </div>
+    <span class="vchk" id="vchk3_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_3')">📖 Przepis (2 min)</button>
+</div>
+<div class="vc" id="vc3_4">
+  <div class="vc-top" onclick="selV(3,4)">
+    <span class="ve">🥑</span>
+    <div class="vc-info">
+      <span class="vn">Tost z awokado</span>
+      <span class="vi-list">1 tost biały · Pół awokado roztartego</span>
+    </div>
+    <span class="vchk" id="vchk3_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_4')">📖 Przepis (5 min)</button>
+</div>
+<div class="vc" id="vc3_5">
+  <div class="vc-top" onclick="selV(3,5)">
+    <span class="ve">🍎</span>
+    <div class="vc-info">
+      <span class="vn">Pieczone jabłko</span>
+      <span class="vi-list">Jabłko pieczone w piekarniku · Miód + cynamon</span>
+    </div>
+    <span class="vchk" id="vchk3_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_5')">📖 Przepis (28 min)</button>
+</div>
+<div class="vc" id="vc3_6">
+  <div class="vc-top" onclick="selV(3,6)">
+    <span class="ve">🫙</span>
+    <div class="vc-info">
+      <span class="vn">Mus bananowy z cynamonem</span>
+      <span class="vi-list">Banan rozgnieciony na mus · Miód</span>
+    </div>
+    <span class="vchk" id="vchk3_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_6')">📖 Przepis (2 min)</button>
+</div>
+<div class="vc" id="vc3_7">
+  <div class="vc-top" onclick="selV(3,7)">
+    <span class="ve">🥣</span>
+    <div class="vc-info">
+      <span class="vn">Kleik owsiany z gruszką</span>
+      <span class="vi-list">Płatki owsiane gotowane · Gotowana gruszka</span>
+    </div>
+    <span class="vchk" id="vchk3_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('3_7')">📖 Przepis (10 min)</button>
+</div></div>
+</div>
+</details>
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🌿</span>
+  <span class="minfo">
+    <span class="mttl">20:00 — Kolacja<span class="meal-count" id="cnt4">0 ✓</span></span>
+    <span class="mbdg"><span class="bdg" style="background:#2D4A2F">💊 Pylera</span><span class="bdg" style="background:#3A6A5A">🔵 PPI</span></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#FFF0EE;border-left:3px solid #C44A2A;color:#7A2A10">BEZ nabiału. PPI najlepiej 30 min przed posiłkiem.</div>
+  <div class="vgrid">
+<div class="vc" id="vc4_0">
+  <div class="vc-top" onclick="selV(4,0)">
+    <span class="ve">🐠</span>
+    <div class="vc-info">
+      <span class="vn">Łosoś + puree</span>
+      <span class="vi-list">Gotowany łosoś · Puree ziemniaczane z oliwą</span>
+    </div>
+    <span class="vchk" id="vchk4_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_0')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc4_1">
+  <div class="vc-top" onclick="selV(4,1)">
+    <span class="ve">🦃</span>
+    <div class="vc-info">
+      <span class="vn">Indyk + ryż</span>
+      <span class="vi-list">Gotowany/pieczony indyk · Ryż biały</span>
+    </div>
+    <span class="vchk" id="vchk4_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_1')">📖 Przepis (28 min)</button>
+</div>
+<div class="vc" id="vc4_2">
+  <div class="vc-top" onclick="selV(4,2)">
+    <span class="ve">🥣</span>
+    <div class="vc-info">
+      <span class="vn">Zupa warzywna</span>
+      <span class="vi-list">Marchewka + ziemniak + cukinia · Bulion warzywny</span>
+    </div>
+    <span class="vchk" id="vchk4_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_2')">📖 Przepis (25 min)</button>
+</div>
+<div class="vc" id="vc4_3">
+  <div class="vc-top" onclick="selV(4,3)">
+    <span class="ve">🍳</span>
+    <div class="vc-info">
+      <span class="vn">Omlet warzywny</span>
+      <span class="vi-list">2 jajka + oliwa (BEZ mleka) · Cukinia lub szpinak</span>
+    </div>
+    <span class="vchk" id="vchk4_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_3')">📖 Przepis (12 min)</button>
+</div>
+<div class="vc" id="vc4_4">
+  <div class="vc-top" onclick="selV(4,4)">
+    <span class="ve">🌾</span>
+    <div class="vc-info">
+      <span class="vn">Mintaj + kasza jaglana</span>
+      <span class="vi-list">Mintaj gotowany na parze · Kasza jaglana</span>
+    </div>
+    <span class="vchk" id="vchk4_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_4')">📖 Przepis (22 min)</button>
+</div>
+<div class="vc" id="vc4_5">
+  <div class="vc-top" onclick="selV(4,5)">
+    <span class="ve">🥦</span>
+    <div class="vc-info">
+      <span class="vn">Krem z brokułów</span>
+      <span class="vi-list">Brokuł + ziemniak gotowane · Zblendowane z oliwą</span>
+    </div>
+    <span class="vchk" id="vchk4_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_5')">📖 Przepis (20 min)</button>
+</div>
+<div class="vc" id="vc4_6">
+  <div class="vc-top" onclick="selV(4,6)">
+    <span class="ve">🍗</span>
+    <div class="vc-info">
+      <span class="vn">Pieczona pierś kurczaka</span>
+      <span class="vi-list">Pierś kurczaka pieczona w folii · Puree ziemniaczane z oliwą</span>
+    </div>
+    <span class="vchk" id="vchk4_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_6')">📖 Przepis (30 min)</button>
+</div>
+<div class="vc" id="vc4_7">
+  <div class="vc-top" onclick="selV(4,7)">
+    <span class="ve">🍝</span>
+    <div class="vc-info">
+      <span class="vn">Makaron z kurczakiem</span>
+      <span class="vi-list">Makaron pszenny gotowany · Gotowany kurczak podrób</span>
+    </div>
+    <span class="vchk" id="vchk4_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('4_7')">📖 Przepis (25 min)</button>
+</div></div>
+</div>
+</details>
+<details class="mc">
+<summary class="ms">
+  <span class="mico">🌙</span>
+  <span class="minfo">
+    <span class="mttl">22:00 — Przekąska nocna<span class="meal-count" id="cnt5">0 ✓</span></span>
+    <span class="mbdg"><span class="bdg" style="background:#2D4A2F">💊 Pylera</span></span>
+  </span>
+  <span class="marr">▾</span>
+</summary>
+<div class="mbdy">
+  <div class="warn" style="background:#FFF4E8;border-left:3px solid #C47A2A;color:#7A3A10">Popij 250 ml wody. Siedź wyprostowany 30 min — chroni przełyk.</div>
+  <div class="vgrid">
+<div class="vc" id="vc5_0">
+  <div class="vc-top" onclick="selV(5,0)">
+    <span class="ve">🍯</span>
+    <div class="vc-info">
+      <span class="vn">Tost z miodem</span>
+      <span class="vi-list">1–2 tosty białe · Miód (najlepiej Manuka)</span>
+    </div>
+    <span class="vchk" id="vchk5_0">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_0')">📖 Przepis (3 min)</button>
+</div>
+<div class="vc" id="vc5_1">
+  <div class="vc-top" onclick="selV(5,1)">
+    <span class="ve">🍚</span>
+    <div class="vc-info">
+      <span class="vn">Ryż z miodem</span>
+      <span class="vi-list">Ryż biały gotowany · Miód + cynamon</span>
+    </div>
+    <span class="vchk" id="vchk5_1">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_1')">📖 Przepis (5 min)</button>
+</div>
+<div class="vc" id="vc5_2">
+  <div class="vc-top" onclick="selV(5,2)">
+    <span class="ve">🍌</span>
+    <div class="vc-info">
+      <span class="vn">Chleb z bananem</span>
+      <span class="vi-list">Bułka biała lub chleb · Plasterki banana</span>
+    </div>
+    <span class="vchk" id="vchk5_2">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_2')">📖 Przepis (2 min)</button>
+</div>
+<div class="vc" id="vc5_3">
+  <div class="vc-top" onclick="selV(5,3)">
+    <span class="ve">🥣</span>
+    <div class="vc-info">
+      <span class="vn">Owsianka wieczorna</span>
+      <span class="vi-list">Płatki owsiane na wodzie · Miód</span>
+    </div>
+    <span class="vchk" id="vchk5_3">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_3')">📖 Przepis (5 min)</button>
+</div>
+<div class="vc" id="vc5_4">
+  <div class="vc-top" onclick="selV(5,4)">
+    <span class="ve">🍎</span>
+    <div class="vc-info">
+      <span class="vn">Pieczone jabłko z miodem</span>
+      <span class="vi-list">Jabłko pieczone bez skórki · Miód + cynamon</span>
+    </div>
+    <span class="vchk" id="vchk5_4">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_4')">📖 Przepis (28 min)</button>
+</div>
+<div class="vc" id="vc5_5">
+  <div class="vc-top" onclick="selV(5,5)">
+    <span class="ve">🌾</span>
+    <div class="vc-info">
+      <span class="vn">Kasza jaglana wieczorna</span>
+      <span class="vi-list">Kasza jaglana na wodzie · Miód</span>
+    </div>
+    <span class="vchk" id="vchk5_5">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_5')">📖 Przepis (22 min)</button>
+</div>
+<div class="vc" id="vc5_6">
+  <div class="vc-top" onclick="selV(5,6)">
+    <span class="ve">🍌</span>
+    <div class="vc-info">
+      <span class="vn">Mus bananowy z miodem</span>
+      <span class="vi-list">Banan rozgnieciony · Miód Manuka</span>
+    </div>
+    <span class="vchk" id="vchk5_6">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_6')">📖 Przepis (2 min)</button>
+</div>
+<div class="vc" id="vc5_7">
+  <div class="vc-top" onclick="selV(5,7)">
+    <span class="ve">🍪</span>
+    <div class="vc-info">
+      <span class="vn">Wafle z masłem migdałowym</span>
+      <span class="vi-list">Wafle ryżowe 2–3 szt. · Masło migdałowe 1 łyżka</span>
+    </div>
+    <span class="vchk" id="vchk5_7">○</span>
+  </div>
+  <button class="recipe-btn" onclick="openRecipe('5_7')">📖 Przepis (2 min)</button>
+</div></div>
+</div>
+</details></div>
+<div id="tab-foods" class="tp"><div class="sh" style="color:#2D4A2F">✅ Zalecane</div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#2D5A30">Kasze i węglowodany</div><div class="ft"><span class="fg">Ryż biały</span><span class="fg">Kasza jaglana</span><span class="fg">Płatki owsiane</span><span class="fg">Biały chleb</span><span class="fg">Makaron</span></div></div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#3A6A3C">Białko</div><div class="ft"><span class="fg">Kurczak</span><span class="fg">Indyk</span><span class="fg">Dorsz</span><span class="fg">Łosoś</span><span class="fg">Mintaj</span><span class="fg">Jajka</span><span class="fg">Serek wiejski</span></div></div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#4A7A4C">Warzywa gotowane</div><div class="ft"><span class="fg">Marchewka</span><span class="fg">Cukinia</span><span class="fg">Ziemniaki</span><span class="fg">Brokuł</span><span class="fg">Szpinak</span><span class="fg">Fasolka</span></div></div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#5A6A2A">Owoce gotowane/dojrzałe</div><div class="ft"><span class="fg">Banan</span><span class="fg">Gruszka gotowana</span><span class="fg">Jabłko pieczone</span><span class="fg">Awokado</span></div></div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#2A4A6A">Nabiał (z dala od Pylery!)</div><div class="ft"><span class="fg">Kefir</span><span class="fg">Jogurt naturalny</span><span class="fg">Serek wiejski</span></div></div><div class="fc" style="border:1px solid #E4EEE4"><div class="fct" style="color:#6A5A2A">Inne</div><div class="ft"><span class="fg">Miód Manuka</span><span class="fg">Oliwa</span><span class="fg">Herbata rumiankowa</span><span class="fg">Rosół</span><span class="fg">Siemię lniane</span><span class="fg">Kleik ryżowy</span></div></div><div class="sh" style="color:#8A2A2A;margin-top:14px">❌ Unikaj</div><div class="fc" style="border:1px solid #EEE0DA"><div class="fct" style="color:#8A2A2A">🔴 Absolutny zakaz</div><div class="ft"><span class="fb">Alkohol</span><span class="fb">Ibuprofen/aspiryna</span><span class="fb">Kawa</span></div></div><div class="fc" style="border:1px solid #EEE0DA"><div class="fct" style="color:#8A4A2A">🟠 Unikaj</div><div class="ft"><span class="fb">Napoje gazowane</span><span class="fb">Ostre przyprawy</span><span class="fb">Surowa cebula</span><span class="fb">Soki cytrusowe</span><span class="fb">Czekolada</span><span class="fb">Mięta</span><span class="fb">Pomidor surowy</span></div></div><div class="fc" style="border:1px solid #EEE0DA"><div class="fct" style="color:#8A6A2A">🟡 Ogranicz</div><div class="ft"><span class="fb">Mocna herbata</span><span class="fb">Smażone</span><span class="fb">Tłuste mięsa</span><span class="fb">Herbata imbirowa</span></div></div></div>
+<div id="tab-shop" class="tp">
+<div class="shop-top">
+  <div class="shop-info" id="shop-info">
+    Zaznacz <strong>dowolną liczbę wariantów</strong> w 📅 <strong>Planie dnia</strong> (możesz wybrać kilka z jednego posiłku). Lista zakupów uzupełni się składnikami ze wszystkich zaznaczonych pozycji.
+  </div>
+  <div class="shop-prog-wrap" id="shop-prog-wrap" style="display:none">
+    <div class="shop-prog-label">
+      <span id="sdone">0</span> / <span id="stotal">0</span> pozycji
+      <span id="spct">0%</span>
+    </div>
+    <div class="shop-bar-bg"><div class="shop-bar" id="sbar"></div></div>
+  </div>
+</div>
+<div id="shop-dynamic"></div>
+<div class="shop-cat" id="shop-always">
+  <div class="shop-cat-title">💊 Apteka — zawsze potrzebne</div>
+  <label class="shop-item" id="lbl_a0"><input type="checkbox" id="a0" onchange="ckA('a0')"><span class="shop-check">○</span><span class="shop-text">Probiotyk (Lactobacillus rhamnosus lub Saccharomyces boulardii)</span></label>
+  <label class="shop-item" id="lbl_a1"><input type="checkbox" id="a1" onchange="ckA('a1')"><span class="shop-check">○</span><span class="shop-text">Pylera — sprawdź czy odebrane ✓</span></label>
+  <label class="shop-item" id="lbl_a2"><input type="checkbox" id="a2" onchange="ckA('a2')"><span class="shop-check">○</span><span class="shop-text">PPI (omeprazol/pantoprazol) — sprawdź ✓</span></label>
+  <label class="shop-item" id="lbl_a3"><input type="checkbox" id="a3" onchange="ckA('a3')"><span class="shop-check">○</span><span class="shop-text">Woda niegazowana (zapas)</span></label>
+</div>
+<button class="reset-btn" onclick="resetShopping()">🔄 Odznacz wszystko</button>
+</div>
+<div id="tab-rules" class="tp"><div class="rc"><span class="ri">⏰</span><div><div class="rt">5–6 posiłków co 3–4 godziny</div><div class="rd">Nigdy na czczo — kwas atakuje zapalną śluzówkę.</div></div></div><div class="rc"><span class="ri">💊</span><div><div class="rt">Pylera zawsze z pełnym posiłkiem</div><div class="rd">Nie na pusty żołądek. Jedzenie chroni śluzówkę.</div></div></div><div class="rc"><span class="ri">🚫🥛</span><div><div class="rt">Nabiał min. 2h od Pylery</div><div class="rd">Wapń blokuje tetracyklinę. Okna: ~11:30 i ~17:00.</div></div></div><div class="rc"><span class="ri">💧</span><div><div class="rt">Pylera + 250 ml wody</div><div class="rd">Siedząco, nie kładź się przez 30 min po dawce.</div></div></div><div class="rc"><span class="ri">🧠</span><div><div class="rt">Elvanse PO śniadaniu</div><div class="rd">Zjedz i weź Pylerę, potem Elvanse. Apetyt opadnie.</div></div></div><div class="rc"><span class="ri">🦠</span><div><div class="rt">Probiotyk 2–3h od Pylery</div><div class="rd">Kefir/jogurt ~11:30 lub ~17:00. Kontynuuj 2 tyg. po kuracji.</div></div></div><div class="rc"><span class="ri">🌡️</span><div><div class="rt">Potrawy letnie</div><div class="rd">Ekstremalne temperatury drażnią zapalną śluzówkę.</div></div></div><div class="rc"><span class="ri">🍽️</span><div><div class="rt">Małe porcje, jedz powoli</div><div class="rd">Nie rozciągaj żołądka. Przeżuwaj każdy kęs.</div></div></div><div class="ftr"><div class="fl">Po zakończeniu 10 dni</div><div class="fd">Kontynuuj probiotyk 2 tygodnie. Kontrola eradykacji — min. 4 tyg. po antybiotykach i 2 tyg. po odstawieniu PPI. Zgłoś się do POZ z wynikiem gastroskopii.</div></div></div>
+
+<!-- Recipe Modal -->
+<div class="overlay" id="overlay" onclick="closeRecipeOnBg(event)">
+<div class="modal" id="modal">
+<div class="modal-hdr">
+  <button class="modal-close" onclick="closeRecipe()">✕ Zamknij</button>
+  <div class="modal-meal" id="modal-meal"></div>
+  <div class="modal-title" id="modal-title"></div>
+  <div class="modal-time" id="modal-time"></div>
+</div>
+<div class="modal-body">
+  <div class="modal-section">
+    <div class="modal-section-title">🛒 Składniki</div>
+    <div id="modal-ingr"></div>
+  </div>
+  <div class="modal-section">
+    <div class="modal-section-title">👨‍🍳 Przygotowanie</div>
+    <div id="modal-steps"></div>
+  </div>
+</div>
+</div></div>
+
+<script>
+var R = {"0_0": {"name": "Kasza jaglana z gruszką", "emoji": "🌾", "time": "25 min", "meal": "8:00 — Śniadanie", "ingredients": ["Kasza jaglana 50 g", "Woda 200 ml", "Gruszka 1 szt.", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Zagotuj wodę, wsyp kaszę i gotuj 20 min na małym ogniu pod przykryciem.", "Gruszką obierz, pokrój w kostkę, gotuj w małej ilości wody 5–8 min aż miękka.", "Wyłóż kaszę na miseczkę, ułóż gruszką, polej miodem i posyp cynamonem."]}, "0_1": {"name": "Tost z jajkiem", "emoji": "🍳", "time": "10 min", "meal": "8:00 — Śniadanie", "ingredients": ["Chleb tostowy 2 kromki", "Jajko 1 szt.", "Oliwa z oliwek 1 łyżeczka", "Cukinia 1/2 szt. lub szpinak garść"], "steps": ["Cukinię pokrój w plastry i duś na oliwie 5 min lub podsmaż szpinak 2 min aż zwiędnie.", "Na tej samej patelni usmaż jajko sadzone na małym ogniu (3 min).", "Opiecz tosty, ułóż warzywo i jajko na wierzchu."]}, "0_2": {"name": "Ryż rozgotowany z miodem", "emoji": "🍚", "time": "25 min", "meal": "8:00 — Śniadanie", "ingredients": ["Ryż biały 60 g", "Woda 350 ml", "Miód 1 łyżka", "Rodzynki 2 łyżki", "Cynamon szczypta"], "steps": ["Ryż zalej zimną wodą i zagotuj. Zmniejsz ogień i gotuj 20–25 min aż ryż będzie bardzo miękki i kleisty.", "Odcedź nadmiar wody. Ryż powinien mieć konsystencję papki — łagodniej dla śluzówki.", "Dodaj miód, rodzynki i cynamon, delikatnie wymieszaj."]}, "0_3": {"name": "Jajecznica na tostach", "emoji": "🥚", "time": "8 min", "meal": "8:00 — Śniadanie", "ingredients": ["Jajka 2 szt.", "Oliwa 1 łyżeczka", "Chleb tostowy 2 kromki", "Szczypiorek kilka łodyżek", "Sól szczypta"], "steps": ["Jajka roztrzep widelcem z szczyptą soli (bez mleka — mleko przy zapaleniu żołądka może drażnić).", "Rozgrzej oliwę na małym ogniu, wlej jajka i mieszaj powoli przez 3 min.", "Ułóż jajecznicę na tostach, posyp posiekanym szczypiorkiem."]}, "0_4": {"name": "Tost z awokado i jajkiem", "emoji": "🥑", "time": "12 min", "meal": "8:00 — Śniadanie", "ingredients": ["Chleb tostowy 2 kromki", "Awokado 1/2 szt.", "Jajko 1 szt.", "Oliwa 1 łyżeczka", "Sól szczypta"], "steps": ["Jajko gotuj 8 min na twardo, ostudź pod zimną wodą, obierz i pokrój w plastry.", "Awokado rozgnieć widelcem z oliwą i szczyptą soli na gładką pastę.", "Posmaruj tosty pastą, ułóż plastry jajka na wierzchu."]}, "0_5": {"name": "Pasta jajeczna na chlebie", "emoji": "🍞", "time": "15 min", "meal": "8:00 — Śniadanie", "ingredients": ["Jajka 2 szt.", "Masło miękkie lub oliwa 1 łyżka", "Szczypiorek", "Sól szczypta", "Chleb biały 2 kromki"], "steps": ["Jajka gotuj 10 min na twardo, obierz i rozgnieć widelcem.", "Dodaj masło lub oliwę, posiekany szczypiorek i sól. Wymieszaj na gładką pastę.", "Posmaruj chleb pastą. Pasta jest lekkostrawna i bogata w białko — idealna przy zapaleniu żołądka."]}, "1_0": {"name": "Kefir z bananem", "emoji": "🥛", "time": "3 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Kefir naturalny 200 ml", "Banan 1 szt.", "Miód 1 łyżka"], "steps": ["Banan obierz i pokrój w plastry lub rozgnieć widelcem.", "Wlej kefir do szklanki lub miseczki.", "Dodaj banana i miód, wymieszaj. Można też podać banana osobno."]}, "1_1": {"name": "Jogurt z owocami", "emoji": "🍶", "time": "8 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Jogurt naturalny 150 g", "Banan 1 szt. lub gruszka 1 szt.", "Miód 1 łyżka", "Płatki owsiane 1 łyżka"], "steps": ["Jeśli używasz gruszki — obierz, pokrój i gotuj 5–8 min w małej ilości wody.", "Wyłóż jogurt do miseczki, ułóż pokrojony owoc.", "Polej miodem i posyp płatkami."]}, "1_2": {"name": "Serek wiejski z gruszką", "emoji": "🧀", "time": "10 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Serek wiejski chudy 150 g", "Gruszka 1 szt.", "Rodzynki 2 łyżki"], "steps": ["Gruszką obierz, pokrój na ćwiartki i gotuj 8 min w małej ilości wody.", "Wyłóż serek do miseczki.", "Ułóż wystudzoną gruszką i rodzynki na serku."]}, "1_3": {"name": "Koktajl probiotyczny", "emoji": "🥤", "time": "3 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Kefir 150 ml", "Banan 1 szt.", "Siemię lniane mielone 1 łyżeczka", "Miód 1 łyżeczka"], "steps": ["Wszystkie składniki wrzuć do blendera.", "Blenduj 30–40 sekund na gładki koktajl.", "Pij od razu — siemię lniane tworzy żel ochronny na śluzówce żołądka."]}, "1_4": {"name": "Jogurt z siemieniem", "emoji": "🌱", "time": "3 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Jogurt naturalny 150 g", "Siemię lniane mielone 1 łyżka", "Miód 1 łyżka", "Rodzynki 1 łyżka"], "steps": ["Wyłóż jogurt do miseczki.", "Posyp mielonym siemieniem lnianym (najlepiej świeżo mielonym).", "Dodaj miód i rodzynki. Siemię powleka śluzówkę i łagodzi stan zapalny."]}, "1_5": {"name": "Kefir z gotowaną gruszką", "emoji": "🍐", "time": "12 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Kefir naturalny 200 ml", "Gruszka 1 szt.", "Miód Manuka 1 łyżka"], "steps": ["Gruszką obierz, pokrój na kawałki i gotuj 8–10 min aż będzie bardzo miękka.", "Zostaw do ostygnięcia.", "Wlej kefir do miseczki, dodaj gruszką i miód Manuka."]}, "2_0": {"name": "Rosół + ryż", "emoji": "🍲", "time": "70 min", "meal": "14:00 — Obiad", "ingredients": ["Kurczak 300 g (skrzydełka lub nogi)", "Marchewka 2 szt.", "Woda 1.5 l", "Ryż biały 80 g", "Natka pietruszki", "Sól"], "steps": ["Kurczaka zalej zimną wodą, zagotuj i zdejmij pianę z powierzchni.", "Dodaj marchewkę i gotuj na małym ogniu 60 min.", "Ugotuj ryż osobno (20 min). Podaj rosół z ryżem, marchewką i natką."]}, "2_1": {"name": "Kurczak + kasza jaglana", "emoji": "🍗", "time": "25 min", "meal": "14:00 — Obiad", "ingredients": ["Filet z kurczaka 150 g", "Kasza jaglana 80 g", "Cukinia 1/2 szt.", "Koperek", "Oliwa 1 łyżka", "Sól"], "steps": ["Kaszę gotuj w wodzie (1:2) przez 20 min pod przykryciem.", "Filet gotuj w lekko osolonej wodzie 20 min, pokrój lub podrób.", "Cukinię pokrój i duś z oliwą i koperkiem 8 min. Podaj razem."]}, "2_2": {"name": "Dorsz + ziemniaki", "emoji": "🐟", "time": "25 min", "meal": "14:00 — Obiad", "ingredients": ["Filet dorsza 150 g", "Ziemniaki 3 szt.", "Marchewka 1 szt.", "Koperek", "Oliwa 1 łyżka", "Sól"], "steps": ["Ziemniaki i marchewkę gotuj 20 min w osolonej wodzie.", "Dorsza gotuj w lekko osolonej wodzie 10 min lub gotuj na parze.", "Polej ziemniaki oliwą, posyp koperkiem. Podaj z marchewką."]}, "2_3": {"name": "Krem z marchewki", "emoji": "🥕", "time": "25 min", "meal": "14:00 — Obiad", "ingredients": ["Marchewka 4 szt.", "Ziemniak 1 szt.", "Bulion warzywny 500 ml", "Oliwa 2 łyżki", "Tost biały 1 szt.", "Sól"], "steps": ["Marchewkę i ziemniak pokrój, wrzuć do bulionu i gotuj 20 min.", "Zblenduj na gładki krem. Dodaj oliwę i sól.", "Podaj z tostami. Marchewka jest łagodna dla śluzówki i bogata w beta-karoten."]}, "2_4": {"name": "Mintaj na parze + ryż", "emoji": "🐠", "time": "22 min", "meal": "14:00 — Obiad", "ingredients": ["Filet mintaja 150 g", "Ryż biały 80 g", "Szpinak 100 g", "Oliwa 1 łyżka", "Koperek", "Sól"], "steps": ["Ryż gotuj 20 min.", "Mintaja gotuj na parze 12 min (lub w folii w piekarniku 180°C, 15 min).", "Szpinak duś z oliwą 3 min. Podaj wszystko razem, posyp koperkiem."]}, "2_5": {"name": "Zupa ziemniaczana", "emoji": "🥔", "time": "25 min", "meal": "14:00 — Obiad", "ingredients": ["Ziemniaki 3 szt.", "Marchewka 2 szt.", "Bulion warzywny 700 ml", "Koperek", "Tost biały 1 szt.", "Sól"], "steps": ["Ziemniaki i marchewkę pokrój w kostkę.", "Wrzuć do bulionu i gotuj 20 min aż warzywa będą miękkie.", "Posyp koperkiem, podaj z tostami."]}, "3_0": {"name": "Gotowana gruszka z miodem", "emoji": "🍐", "time": "12 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Gruszka 1 szt.", "Woda do gotowania", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Gruszką obierz, przekrój na ćwiartki, usuń gniazdo nasienne.", "Gotuj w małej ilości wody 8–10 min aż miękka.", "Wyłóż na talerz, polej miodem i posyp cynamonem. Gotowana gruszka jest bardzo łagodna."]}, "3_1": {"name": "Kleik ryżowy", "emoji": "🍚", "time": "35 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Ryż biały 40 g", "Woda 400 ml", "Miód 1 łyżka"], "steps": ["Ryż zalej wodą, zagotuj i gotuj na bardzo małym ogniu 30–35 min mieszając co kilka minut.", "Ryż powinien się rozpaść tworząc gęstą papkę.", "Dodaj miód i wymieszaj. Kleik ryżowy to tradycyjny środek uspokajający śluzówkę żołądka."]}, "3_2": {"name": "Wafle ryżowe z miodem", "emoji": "🍪", "time": "2 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Wafle ryżowe 3–4 szt.", "Masło migdałowe 2 łyżki lub miód 1 łyżka"], "steps": ["Wyłóż wafle na talerz.", "Posmaruj masłem migdałowym lub polej miodem.", "Podaj z ciepłą herbatą rumiankową. Prosta, szybka przekąska."]}, "3_3": {"name": "Banan z miodem Manuka", "emoji": "🍌", "time": "2 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Banan dojrzały 1 szt.", "Miód Manuka 1 łyżka"], "steps": ["Banan obierz. Możesz podać w całości lub rozgnieść widelcem na mus.", "Polej miodem Manuka.", "Miód Manuka ma udokumentowane działanie przeciwko H. pylori."]}, "3_4": {"name": "Tost z awokado", "emoji": "🥑", "time": "5 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Tost biały 1 szt.", "Awokado 1/2 szt.", "Oliwa 1 łyżeczka", "Sól szczypta"], "steps": ["Awokado rozgnieć widelcem z oliwą i szczyptą soli.", "Opiecz tost.", "Posmaruj pastą z awokado. Awokado ma dobre tłuszcze i nie drażni śluzówki."]}, "3_5": {"name": "Pieczone jabłko", "emoji": "🍎", "time": "28 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Jabłko 1 szt.", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Jabłko umyj, odkrój wieczko, wydrąż gniazdo nasienne łyżeczką.", "Wlej miód do środka, posyp cynamonem.", "Piecz w 180°C przez 20–25 min. Pieczone jabłko jest alkaliczne i delikatne."]}, "4_0": {"name": "Łosoś + puree", "emoji": "🐠", "time": "25 min", "meal": "20:00 — Kolacja", "ingredients": ["Łosoś filet 150 g", "Ziemniaki 3 szt.", "Szpinak 100 g", "Oliwa 2 łyżki", "Sól"], "steps": ["Ziemniaki gotuj 20 min, odcedź i ugniataj z oliwą na gładkie puree.", "Łososia gotuj na parze 12 min lub piecz w folii w 180°C przez 15 min.", "Szpinak duś z oliwą 3 min. Ułóż puree, łososia i szpinak na talerzu."]}, "4_1": {"name": "Indyk + ryż", "emoji": "🦃", "time": "28 min", "meal": "20:00 — Kolacja", "ingredients": ["Pierś indyka 150 g", "Ryż biały 80 g", "Marchewka 2 szt.", "Koperek", "Sól"], "steps": ["Ryż gotuj 20 min. Marchewkę gotuj 20 min.", "Indyka gotuj w lekko osolonej wodzie 25 min lub piecz w folii 180°C / 20 min.", "Pokrój indyka, podaj z ryżem i marchewką, posyp koperkiem."]}, "4_2": {"name": "Zupa warzywna", "emoji": "🥣", "time": "25 min", "meal": "20:00 — Kolacja", "ingredients": ["Marchewka 2 szt.", "Ziemniak 2 szt.", "Cukinia 1 szt.", "Bulion 700 ml", "Natka pietruszki", "Tost biały"], "steps": ["Wszystkie warzywa pokrój w kostkę.", "Wrzuć do bulionu i gotuj 20 min aż miękkie.", "Posyp natką, podaj z tostami."]}, "4_3": {"name": "Omlet warzywny", "emoji": "🍳", "time": "12 min", "meal": "20:00 — Kolacja", "ingredients": ["Jajka 2 szt.", "Woda 2 łyżki", "Cukinia 1/2 szt. lub szpinak garść", "Oliwa 1 łyżka", "Tost biały 1 szt.", "Sól"], "steps": ["Jajka roztrzep z 2 łyżkami wody i szczyptą soli (zamiast mleka — woda jest lżejsza).", "Cukinię lub szpinak podsmaż 5 min na oliwie.", "Wlej jajka na warzywa, na małym ogniu zamieszaj i złóż na pół po zetknięciu się."]}, "4_4": {"name": "Mintaj + kasza jaglana", "emoji": "🌾", "time": "22 min", "meal": "20:00 — Kolacja", "ingredients": ["Mintaj filet 150 g", "Kasza jaglana 80 g", "Szpinak 100 g", "Oliwa 1 łyżka", "Koperek", "Sól"], "steps": ["Kaszę gotuj 20 min (1:2 kasza do wody).", "Mintaja gotuj na parze 12 min.", "Szpinak duś z oliwą 3 min. Podaj wszystko razem, posyp koperkiem."]}, "4_5": {"name": "Krem z brokułów", "emoji": "🥦", "time": "20 min", "meal": "20:00 — Kolacja", "ingredients": ["Brokuł 300 g", "Ziemniak 1 szt.", "Bulion warzywny 500 ml", "Oliwa 2 łyżki", "Tost biały 1 szt.", "Sól"], "steps": ["Brokuł podziel na różyczki, ziemniak pokrój. Gotuj w bulionie 15 min.", "Zblenduj na gładki krem, dodaj oliwę i sól.", "Podaj z tostami. Brokuł zawiera sulforafan aktywny przeciwko H. pylori."]}, "5_0": {"name": "Tost z miodem", "emoji": "🍯", "time": "3 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Tost biały 1–2 szt.", "Miód Manuka 1–2 łyżki"], "steps": ["Opiecz tost w tosterze.", "Posmaruj miodem Manuka.", "Zjedz siedząc, popij 250 ml wody. Poczekaj 30 min przed położeniem się."]}, "5_1": {"name": "Ryż z miodem", "emoji": "🍚", "time": "5 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Ryż biały gotowany 60 g (resztki z obiadu)", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Podgrzej resztki ryżu z obiadu lub ugotuj świeży.", "Dodaj miód i cynamon, wymieszaj.", "Zjedz małą porcję siedząc, popij wodą."]}, "5_2": {"name": "Chleb z bananem", "emoji": "🍌", "time": "2 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Bułka biała lub chleb pszenny 2 kromki", "Banan 1/2 szt."], "steps": ["Pokrój banan w plastry.", "Ułóż na chlebie.", "Zjedz spokojnie, popij herbatą rumiankową i 250 ml wody."]}, "5_3": {"name": "Owsianka wieczorna", "emoji": "🥣", "time": "5 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Płatki owsiane błyskawiczne 30 g", "Woda 150 ml", "Miód 1 łyżka"], "steps": ["Płatki zalej wrzącą wodą i przykryj na 3–4 min.", "Dodaj miód, wymieszaj.", "Mała, lekka porcja — nie obciąża żołądka przed snem."]}, "5_4": {"name": "Pieczone jabłko z miodem", "emoji": "🍎", "time": "28 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Jabłko 1 szt.", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Jabłko wydrąż, wlej miód, posyp cynamonem.", "Piecz w 180°C przez 20–25 min.", "Podaj letnie (nie gorące) — pieczone jabłko jest alkaliczne i łagodne."]}, "5_5": {"name": "Kasza jaglana wieczorna", "emoji": "🌾", "time": "22 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Kasza jaglana 40 g", "Woda 200 ml", "Miód 1 łyżka"], "steps": ["Kaszę zalej zimną wodą, zagotuj.", "Gotuj 20 min na małym ogniu pod przykryciem.", "Lekko przestudź, dodaj miód. Kasza jaglana łagodzi stan zapalny błony śluzowej."]}, "0_6": {"name": "Polenta z miodem i bananem", "emoji": "🫕", "time": "8 min", "meal": "8:00 — Śniadanie", "ingredients": ["Polenta 60 g", "Woda 300 ml", "Miód 1 łyżka", "Banan 1/2 szt."], "steps": ["Zagotuj wodę, wsyp polentę i gotuj mieszając 5 min aż zgęstnieje.", "Lekko przestudź — nie jedz gorącej, drażni śluzówkę.", "Dodaj miód i pokrojonego banana. Polenta jest bardzo lekkostrawna."]}, "0_7": {"name": "Tost z bananem i masłem migdałowym", "emoji": "🍌", "time": "5 min", "meal": "8:00 — Śniadanie", "ingredients": ["Tost biały 2 szt.", "Masło migdałowe 2 łyżki", "Banan 1/2 szt.", "Miód 1 łyżeczka"], "steps": ["Opiecz tosty.", "Posmaruj masłem migdałowym.", "Ułóż plasterki banana, polej odrobiną miodu."]}, "1_6": {"name": "Lassi bananowe", "emoji": "🥤", "time": "3 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Kefir naturalny 200 ml", "Banan 1 szt.", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Wszystkie składniki wrzuć do blendera.", "Blenduj 30 sekund.", "Pij od razu — doskonałe źródło probiotyków."]}, "1_7": {"name": "Twarożek z rodzynkami", "emoji": "🫙", "time": "2 min", "meal": "11:30 — Drugie śniadanie", "ingredients": ["Twarożek chudy 150 g", "Rodzynki 2 łyżki", "Miód 1 łyżka"], "steps": ["Wyłóż twarożek do miseczki.", "Dodaj rodzynki i polej miodem.", "Delikatnie wymieszaj."]}, "2_6": {"name": "Łosoś + kasza jaglana", "emoji": "🐟", "time": "25 min", "meal": "14:00 — Obiad", "ingredients": ["Łosoś filet 150 g", "Kasza jaglana 80 g", "Marchewka 2 szt.", "Koperek", "Oliwa 1 łyżka", "Sól"], "steps": ["Kaszę gotuj 20 min (kasza:woda = 1:2).", "Marchewkę gotuj 20 min.", "Łososia gotuj na parze 12 min. Podaj razem z koperkiem i oliwą."]}, "2_7": {"name": "Krem z cukinii", "emoji": "🥒", "time": "20 min", "meal": "14:00 — Obiad", "ingredients": ["Cukinia 2 szt.", "Ziemniak 1 szt.", "Bulion warzywny 500 ml", "Oliwa 2 łyżki", "Tost biały", "Sól"], "steps": ["Cukinię i ziemniak pokrój na kawałki.", "Gotuj w bulionie 15 min.", "Zblenduj z oliwą i solą. Podaj z tostami."]}, "3_6": {"name": "Mus bananowy z cynamonem", "emoji": "🫙", "time": "2 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Banan bardzo dojrzały 1 szt.", "Miód 1 łyżka", "Cynamon szczypta"], "steps": ["Banan obierz i rozgnieć widelcem na gładki mus.", "Dodaj miód i cynamon, wymieszaj.", "Jedz łyżką — idealny przy zapaleniu śluzówki."]}, "3_7": {"name": "Kleik owsiany z gruszką", "emoji": "🥣", "time": "10 min", "meal": "17:00 — Podwieczorek", "ingredients": ["Płatki owsiane błyskawiczne 40 g", "Woda 200 ml", "Gruszka 1/2 szt.", "Miód 1 łyżka"], "steps": ["Gruszką obierz, pokrój, gotuj 5 min.", "Płatki zalej wrzątkiem, przykryj na 4 min.", "Wyłóż płatki, ułóż gruszką, polej miodem."]}, "4_6": {"name": "Pieczona pierś kurczaka", "emoji": "🍗", "time": "30 min", "meal": "20:00 — Kolacja", "ingredients": ["Pierś kurczaka 150 g", "Ziemniaki 3 szt.", "Brokuł 200 g", "Oliwa 2 łyżki", "Sól"], "steps": ["Kurczaka owiń folią z oliwą i solą. Piecz w 180°C przez 25 min.", "Ziemniaki gotuj 20 min, ugniataj z oliwą na puree.", "Brokuł gotuj 10 min. Podaj wszystko razem."]}, "4_7": {"name": "Makaron z kurczakiem", "emoji": "🍝", "time": "25 min", "meal": "20:00 — Kolacja", "ingredients": ["Makaron pszenny 80 g", "Filet kurczaka 120 g", "Cukinia 1/2 szt.", "Oliwa 1 łyżka", "Koperek", "Sól"], "steps": ["Kurczaka gotuj 20 min, podrób widelcem.", "Makaron gotuj al dente, odcedź.", "Cukinię duś z oliwą 8 min. Wymieszaj wszystko, posyp koperkiem."]}, "5_6": {"name": "Mus bananowy z miodem", "emoji": "🍌", "time": "2 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Banan dojrzały 1 szt.", "Miód Manuka 1 łyżeczka"], "steps": ["Banan rozgnieć widelcem na gładki mus.", "Dodaj miód Manuka.", "Zjedz powoli siedząc, popij 250 ml wody."]}, "5_7": {"name": "Wafle z masłem migdałowym", "emoji": "🍪", "time": "2 min", "meal": "22:00 — Przekąska nocna", "ingredients": ["Wafle ryżowe 2–3 szt.", "Masło migdałowe 1 łyżka"], "steps": ["Posmaruj wafle masłem migdałowym.", "Zjedz powoli, dobrze przeżuwając.", "Popij 250 ml wody. Nie kładź się przez 30 min."]}};
+var sel = {};
+
+function showTab(id,btn){
+  document.querySelectorAll('.tp').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.tb').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function selV(mi,vi){
+  setTimeout(function(){if(document.getElementById('tab-shop').classList.contains('on'))buildShopList();},50);
+  if(!Array.isArray(sel[mi])) sel[mi]=[];
+  // Update count badge after change
+  // Update count badge
+  var badge=document.getElementById('cnt'+mi);
+  if(badge){
+    var cnt=sel[mi]?sel[mi].length:0;
+    badge.textContent=cnt+' ✓';
+    badge.style.display=cnt>0?'inline':'none';
+  }
+  var arr=sel[mi];
+  var idx=arr.indexOf(vi);
+  var el=document.getElementById('vc'+mi+'_'+vi);
+  if(idx>=0){
+    arr.splice(idx,1);
+    if(el){el.classList.remove('on');el.querySelector('.vchk').textContent='○';}
+  } else {
+    arr.push(vi);
+    if(el){el.classList.add('on');el.querySelector('.vchk').textContent='✓';}
+  }
+}
+
+function openRecipe(key){
+  var r=R[key];
+  if(!r)return;
+  document.getElementById('modal-meal').textContent=r.meal;
+  document.getElementById('modal-title').textContent=r.emoji+' '+r.name;
+  document.getElementById('modal-time').textContent='⏱ Czas przygotowania: '+r.time;
+  var ingr='';
+  r.ingredients.forEach(function(i){
+    ingr+='<div class="ingr-item"><span class="ingr-dot">·</span>'+i+'</div>';
+  });
+  document.getElementById('modal-ingr').innerHTML=ingr;
+  var steps='';
+  r.steps.forEach(function(s,i){
+    steps+='<div class="step-item"><span class="step-num">'+(i+1)+'</span><span>'+s+'</span></div>';
+  });
+  document.getElementById('modal-steps').innerHTML=steps;
+  document.getElementById('overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+
+function closeRecipe(){
+  document.getElementById('overlay').classList.remove('on');
+  document.body.style.overflow='';
+}
+
+function closeRecipeOnBg(e){
+  if(e.target===document.getElementById('overlay'))closeRecipe();
+}
+
+
+
+// Ingredient categorisation
+var CAT_MAP = [
+  ["🥦 Warzywa i owoce", ["marchewk","cukini","ziemniak","brokuł","szpinak","fasolka","banan","gruszk","jabłk","awokad","polent"]],
+  ["🍗 Mięso i ryby",    ["kurczak","indyk","dorsz","łosoś","mintaj","jajk"]],
+  ["🍞 Pieczywo i kasze",["ryż","kasza","makaron","tost","chleb","bułk","płatki","wafle","polent"]],
+  ["🥛 Nabiał",          ["kefir","jogurt","serek","twarożek","masło migdałow","masło ("]],
+  ["🍯 Przyprawy i inne",["miód","oliw","cynamon","rodzynki","sól","siemię","masło migdałow"]],
+  ["🍵 Herbaty",         ["herbata"]],
+];
+
+function categorise(ingr) {
+  var low = ingr.toLowerCase();
+  for(var i=0;i<CAT_MAP.length;i++){
+    for(var j=0;j<CAT_MAP[i][1].length;j++){
+      if(low.indexOf(CAT_MAP[i][1][j])>=0) return CAT_MAP[i][0];
+    }
+  }
+  return "🛒 Inne";
+}
+
+function buildShopList() {
+  var hasAny=Object.keys(sel).some(function(k){return Array.isArray(sel[k])&&sel[k].length>0;});
+  var dyn = document.getElementById('shop-dynamic');
+  var info = document.getElementById('shop-info');
+  var progW = document.getElementById('shop-prog-wrap');
+
+  if(!hasAny){
+    dyn.innerHTML='';
+    info.style.display='block';
+    progW.style.display='none';
+    return;
+  }
+  info.style.display='none';
+  progW.style.display='block';
+
+  // Collect all ingredients from ALL selected variants
+  var seen = {};
+  var cats = {};
+  Object.keys(sel).forEach(function(mi){
+    if(!Array.isArray(sel[mi])) return;
+    sel[mi].forEach(function(vi){
+      var key = mi+'_'+vi;
+      var r = R[key];
+      if(!r) return;
+      r.ingredients.forEach(function(ingr){
+        var norm = ingr.replace(/\s+\d.*$/,'').trim();
+        var low = norm.toLowerCase();
+        if(!seen[low]){
+          seen[low]=true;
+          var cat = categorise(ingr);
+          if(!cats[cat]) cats[cat]=[];
+          cats[cat].push(ingr);
+        }
+      });
+    });
+  });
+
+  // Build HTML
+  var h='';
+  var total=0;
+  var idx=0;
+  var catOrder=["🥦 Warzywa i owoce","🍗 Mięso i ryby","🍞 Pieczywo i kasze","🥛 Nabiał","🍯 Przyprawy i inne","🍵 Herbaty","🛒 Inne"];
+  catOrder.forEach(function(cat){
+    if(!cats[cat]||cats[cat].length===0) return;
+    h+='<div class="shop-cat"><div class="shop-cat-title">'+cat+'</div>';
+    cats[cat].forEach(function(ingr){
+      var id='di'+idx;
+      var st=getShopSt(id);
+      h+='<label class="shop-item'+(st?' checked':'')+'" id="lbl_'+id+'">'
+        +'<input type="checkbox" id="'+id+'"'+(st?' checked':'')+' onchange="ckD(\''+id+'\')">'
+        +'<span class="shop-check">'+(st?'✓':'○')+'</span>'
+        +'<span class="shop-text">'+ingr+'</span></label>';
+      idx++; total++;
+    });
+    h+='</div>';
+  });
+  dyn.innerHTML=h;
+  document.getElementById('stotal').textContent=total;
+  updateShopProg(total);
+}
+
+function getShopSt(key){
+  try{var s=JSON.parse(localStorage.getItem('shop2')||'{}');return!!s[key];}catch(e){return false;}
+}
+function saveShopSt(key,val){
+  try{var s=JSON.parse(localStorage.getItem('shop2')||'{}');s[key]=val;localStorage.setItem('shop2',JSON.stringify(s));}catch(e){}
+}
+function ckD(id){
+  var cb=document.getElementById(id);
+  var lbl=document.getElementById('lbl_'+id);
+  if(!lbl)return;
+  lbl.classList.toggle('checked',cb.checked);
+  lbl.querySelector('.shop-check').textContent=cb.checked?'✓':'○';
+  saveShopSt(id,cb.checked);
+  var total=parseInt(document.getElementById('stotal').textContent)||0;
+  updateShopProg(total);
+}
+function ckA(id){
+  var cb=document.getElementById(id);
+  var lbl=document.getElementById('lbl_'+id);
+  if(!lbl)return;
+  lbl.classList.toggle('checked',cb.checked);
+  lbl.querySelector('.shop-check').textContent=cb.checked?'✓':'○';
+  saveShopSt(id,cb.checked);
+}
+function updateShopProg(total){
+  var done=document.querySelectorAll('#shop-dynamic .shop-item.checked').length;
+  var pct=total>0?Math.round(done/total*100):0;
+  var el=document.getElementById('sdone');
+  if(el)el.textContent=done;
+  var pe=document.getElementById('spct');
+  if(pe)pe.textContent=pct+'%';
+  var bar=document.getElementById('sbar');
+  if(bar)bar.style.width=pct+'%';
+}
+function resetShopping(){
+  try{localStorage.removeItem('shop2');}catch(e){}
+  document.querySelectorAll('.shop-item').forEach(function(l){
+    l.classList.remove('checked');
+    l.querySelector('.shop-check').textContent='○';
+    var cb=l.querySelector('input[type=checkbox]');
+    if(cb)cb.checked=false;
+  });
+  updateShopProg(0);
+}
+
+// Load always-items state on start
+['a0','a1','a2','a3'].forEach(function(id){
+  if(getShopSt(id)){
+    var cb=document.getElementById(id);
+    var lbl=document.getElementById('lbl_'+id);
+    if(cb&&lbl){cb.checked=true;lbl.classList.add('checked');lbl.querySelector('.shop-check').textContent='✓';}
+  }
+});
+
+// Rebuild shopping list when switching to shop tab
+var _origShowTab = showTab;
+showTab = function(id, btn){
+  _origShowTab(id, btn);
+  if(id==='shop') buildShopList();
+};
+
+</script>
+</body></html>
